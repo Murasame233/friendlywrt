@@ -3,6 +3,10 @@
 # ---------------------------------------------------------
 # put to /etc/uci-defaults/
 # see default_postinst() in lib/functions.sh
+. /lib/functions/uci-defaults.sh
+. /lib/functions/system.sh
+board=$(board_name)
+boardname="${board##*,}"
 
 function init_firewall_ipv6() {
 	local rule_en='1'
@@ -29,13 +33,37 @@ function init_firewall_ipv6() {
 }
 
 function init_firewall() {
-	zone_name=$(uci -q get firewall.@zone[1].name)
-	[ "$zone_name" = "wan" ] || return 0
+	uci set firewall.@defaults[0].input='ACCEPT'
+	uci set firewall.@defaults[0].output='ACCEPT'
+	uci set firewall.@defaults[0].forward='ACCEPT'
 
-	uci set firewall.@defaults[0].flow_offloading='0'
-	uci set firewall.@zone[1].input='ACCEPT'
-	uci set firewall.@zone[1].output='ACCEPT'
-	uci set firewall.@zone[1].forward='ACCEPT'
+	case "$boardname" in
+	nanopi-r5* | nanopi-r3* | nanopi-r2*)
+		uci set firewall.@defaults[0].flow_offloading='1'
+		;;
+	*)
+		uci set firewall.@defaults[0].flow_offloading='0'
+		;;
+	esac
+
+	uci set firewall.@defaults[0].fullcone='0'
+
+	zone_name=$(uci -q get firewall.@zone[1].name)
+	if [ "$zone_name" = "wan" ]; then
+		INTERFACES=$(ip address | grep ^[0-9] | awk -F: '{print $2}' | sed "s/ //g" | grep '^[e]' | grep -v "@" | grep -v "\.")
+		IFCOUNT=$(echo "${INTERFACES}" | wc -l)
+		if [ ${IFCOUNT} -eq 1 ]; then
+			# INSECURE!!! only for single-port device
+			uci set firewall.@zone[1].input='ACCEPT'
+			uci set firewall.@zone[1].output='ACCEPT'
+			uci set firewall.@zone[1].forward='ACCEPT'
+		else
+			uci set firewall.@zone[1].input='REJECT'
+			uci set firewall.@zone[1].output='ACCEPT'
+			uci set firewall.@zone[1].forward='REJECT'
+		fi
+	fi
+
 	uci commit firewall
 	fw4 reload
 }
@@ -80,9 +108,13 @@ EOL
 }
 
 function init_system() {
+	[ -e /usr/bin/ip ] || ln -sf /sbin/ip /usr/bin/ip
+	[ -e /etc/crontabs/root ] || touch /etc/crontabs/root
 	uci -q batch <<-EOF
 		set system.@system[-1].hostname='$HOSTNAME'
 		set system.@system[-1].ttylogin='1'
+		set system.@system[-1].timezone=CST-8
+		set system.@system[-1].zonename=Asia/Shanghai
 		commit system
 	EOF
 }
@@ -209,7 +241,6 @@ if [ "${1}" = "all" ]; then
 	init_nft_qos
 	init_firewall_ipv6
 	init_firewall
-	init_lcd2usb
 	init_system
 	init_samba4
 	init_ttyd
