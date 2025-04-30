@@ -167,6 +167,30 @@ function init_theme() {
 	fi
 }
 
+function init_docker() {
+    if [ -f /etc/config/dockerd ]; then
+		sed -i '/option alt_config_file/d' /etc/config/dockerd
+		uci set dockerd.globals.alt_config_file='/etc/docker/daemon.json'
+		uci set dockerd.globals.data_root='/opt/docker/'
+		uci set dockerd.globals.log_level='warn'
+		uci set dockerd.globals.iptables='1'
+		uci set dockerd.proxies=proxies
+		uci set dockerd.firewall=firewall
+		uci set dockerd.firewall.device='docker0'
+		uci set dockerd.firewall.blocked_interfaces='wan'
+		uci commit dockerd
+
+		mkdir -p /etc/docker
+		cat <<EOF > /etc/docker/daemon.json
+{
+  "dns": ["8.8.8.8", "8.8.4.4"],
+  "data-root": "/opt/docker/"
+}
+EOF
+
+    fi
+}
+
 function init_root_home() {
 	chmod 0700 /root
 	mkdir -m 0700 -p /root/.ssh
@@ -258,6 +282,7 @@ if [ "${1}" = "all" ]; then
 	init_watchcat
 	init_openssh
 	init_theme
+	init_docker
 	init_root_home
 	init_root_vimrc
 	init_button
