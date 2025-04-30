@@ -121,8 +121,9 @@ for (let phy_name, phy in board.wlan) {
 			htmode = 'HT20';
 			channel = 7;
 			country = '00';
-		// rtl88x2bu / rtl88x2cs / rtl88x2ce
+		// rtl88x2bu / rtl8851bu / rtl88x2cs / rtl88x2ce
 		} else if (product == "bda/b82c/210"
+			|| product == "bda/b851/0"
 			|| product == "sdio-rtl88x2cs-024C:C822"
 			|| product == "pcie-rtl88x2ce-10EC:C822") {
 			band_name = '5g';
