@@ -49,8 +49,10 @@ set_interface_rps() {
 
 case "$(board_name)" in
 armsom,sige7|\
+friendlyarm,nanopc-t6|\
 friendlyarm,nanopi-r3s|\
 friendlyarm,nanopi-r5c|\
+friendlyarm,nanopi-r6c|\
 radxa,e25|\
 sinovoip,rk3568-bpi-r2pro)
 	set_interface_core 2 "eth0"
@@ -78,9 +80,7 @@ friendlyelec,nanopi-r3s)
 	;;
 friendlyelec,nanopi-r4s|\
 friendlyarm,nanopi-r4s|\
-friendlyarm,nanopi-r4s-enterprise|\
-friendlyarm,nanopi-r6c|\
-friendlyarm,nanopc-t6)
+friendlyarm,nanopi-r4s-enterprise)
 	set_interface_core 10 "eth0"
 	echo 3f > /sys/class/net/eth0/queues/rx-0/rps_cpus
 	set_interface_core 20 "eth1"
@@ -148,15 +148,15 @@ friendlyelec,nanopc-t6)
 	set_interface_core 40 "xhci-hcd:usb7"
 	set_interface_rps "fe" "wlan0"
 	;;
-friendlyarm,nanopi-r5s)
+friendlyelec,nanopi-m5)
+	echo fe > /sys/class/net/eth0/queues/rx-0/rps_cpus
+	echo fe > /sys/class/net/eth1/queues/rx-0/rps_cpus
+	;;
+friendlyarm,nanopi-r5s|\
+friendlyarm,nanopi-r6s)
 	set_interface_core 2 "eth0"
 	set_interface_core 4 "eth1"
 	set_interface_core 8 "eth2"
-	;;
-friendlyarm,nanopi-r6s)
-	set_interface_core 10 "eth0"
-	set_interface_core 20 "eth1"
-	set_interface_core 40 "eth2"
 	;;
 esac
 
