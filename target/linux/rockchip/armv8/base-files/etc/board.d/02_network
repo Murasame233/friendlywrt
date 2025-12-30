@@ -51,6 +51,7 @@ rockchip_setup_interfaces()
 	friendlyelec,nanopi-m4|\
 	friendlyelec,nanopi-m6|\
 	friendlyelec,nanopi-neo4|\
+	friendlyelec,cm3588|\
 	friendlyelec,som-rk3399)
 		ucidef_set_interface_wan 'eth0'
 		ucidef_set_interface "lan" device "wlan0" protocol "static" ipaddr "192.168.2.1"
