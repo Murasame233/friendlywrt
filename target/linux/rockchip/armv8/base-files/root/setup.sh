@@ -183,6 +183,7 @@ function init_docker() {
 		mkdir -p /etc/docker
 		cat <<EOF > /etc/docker/daemon.json
 {
+  "ip6tables": false,
   "dns": ["8.8.8.8", "8.8.4.4"],
   "data-root": "/opt/docker/"
 }
