@@ -6,11 +6,6 @@ export PATH=/sbin:/usr/sbin:/bin:/usr/bin
 FOLDER=/etc/usb_modeswitch.d
 TOOL=/usr/sbin/usb_modeswitch
 
-#echo "PRODUCT:   ${PRODUCT}" >> /dev/ttyS0
-#echo "ACTION:    ${ACTION}" >> /dev/ttyS0
-#echo "INTERFACE: ${INTERFACE}" >> /dev/ttyS0
-#echo "DEVICE:    ${DEVICE}" >> /dev/ttyS0
-
 VID=`echo $PRODUCT | awk '{split($0,p,"/" ); print p[1]}'`
 PID=`echo $PRODUCT | awk '{split($0,p,"/" ); print p[2]}'`
 
