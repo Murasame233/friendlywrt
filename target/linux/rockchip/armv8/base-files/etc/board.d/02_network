@@ -50,6 +50,8 @@ rockchip_setup_interfaces()
 	friendlyelec,nanopc-t4|\
 	friendlyelec,nanopi-m4|\
 	friendlyelec,nanopi-m6|\
+	friendlyelec,nanopi-zero2|\
+	friendlyelec,nanopi-neo3-plus|\
 	friendlyelec,nanopi-neo4|\
 	friendlyelec,cm3588|\
 	friendlyelec,som-rk3399)
